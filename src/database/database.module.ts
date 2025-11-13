@@ -15,33 +15,32 @@ import * as path from 'path';
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => {
-        const dbPort = configService.get<number>('DB_PORT');
-        if (!dbPort) {
-          throw new Error('DB_PORT is not defined in the configuration');
+        const databaseUrl = configService.get('DATABASE_URL');
+        if (!databaseUrl) {
+          throw new Error('DATABASE_URL is not defined in the configuration');
         }
+
+        // Parse the connection URL to check for SSL requirement
+        const dbUrl = new URL(databaseUrl);
+        const sslRequired = dbUrl.searchParams.get('sslmode') === 'require';
         
         return {
           type: 'postgres',
-          host: configService.get('DB_HOST') || 'localhost',
-          port: +dbPort,
-          username: configService.get('DB_USERNAME') || 'postgres',
-          password: configService.get('DB_PASSWORD') || '7799179121',
-          database: configService.get('DB_NAME') || 'register_payment',
+          url: databaseUrl,
           entities: [Register, Payment, Assignment, Location],
           migrations: [path.join(__dirname, '../../migrations/*.ts')],
           migrationsRun: true, // Run migrations on startup
           synchronize: false, // Keep this as false when using migrations
           logging: ['error', 'warn', 'schema'], // More detailed logging
           namingStrategy: new SnakeNamingStrategy(), // Use snake_case for database columns
-          ssl: configService.get('NODE_ENV') === 'production' || configService.get('DB_SSL') === 'true' ? {
+          ssl: sslRequired ? {
             rejectUnauthorized: false, // This is needed for self-signed certificates
-            sslmode: 'require'
           } : false,
-          extra: {
-            ssl: configService.get('NODE_ENV') === 'production' || configService.get('DB_SSL') === 'true' ? {
+          extra: sslRequired ? {
+            ssl: {
               rejectUnauthorized: false
-            } : null
-          }
+            }
+          } : {}
         };
       },
     }),

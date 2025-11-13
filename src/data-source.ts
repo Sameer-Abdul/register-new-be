@@ -8,16 +8,30 @@ config();
 
 const configService = new ConfigService();
 
+// Get DATABASE_URL from environment with sslmode=require
+const databaseUrl = configService.get('DATABASE_URL');
+if (!databaseUrl) {
+  throw new Error('DATABASE_URL is not defined in environment variables');
+}
+
+// Parse the connection URL
+const dbUrl = new URL(databaseUrl);
+const sslRequired = dbUrl.searchParams.get('sslmode') === 'require';
+
 export const AppDataSource = new DataSource({
-  type: 'postgres', 
-  host: configService.get('DB_HOST') || 'localhost',
-  port: configService.get<number>('DB_PORT') || 5432,
-  username: configService.get('DB_USERNAME') || 'postgres',
-  password: configService.get('DB_PASSWORD') || '7799179121',
-  database: configService.get('DB_NAME') || 'register_payment',
+  type: 'postgres',
+  url: databaseUrl,
   entities: [Register, Payment],
   synchronize: false,
   logging: true,
   migrations: ['src/migrations/*.ts'],
   migrationsTableName: 'migrations',
+  ssl: sslRequired ? {
+    rejectUnauthorized: false, // Required for self-signed certificates
+  } : false,
+  extra: sslRequired ? {
+    ssl: {
+      rejectUnauthorized: false
+    }
+  } : {}
 });
