@@ -1,24 +1,33 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
-@Entity('register')
+@Entity()
 export class Register {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ name: 'first_name' })
-  firstName: string;
+  @Column()
+  first_name: string;
 
-  @Column({ name: 'middle_name', nullable: true })
-  middleName: string;
+  @Column({ nullable: true })
+  middle_name: string;
 
-  @Column({ name: 'last_name' })
-  lastName: string;
+  @Column()
+  last_name: string;
 
-  @Column({ name: 'mobile_no' })
-  mobileNo: string;
+  @Column()
+  mobile_no: string;
 
   @Column({ unique: true })
   email: string;
+
+  @Column()
+  gender: string;
+
+  @Column()
+  dob: string;
+
+  @Column()
+  marital_status: string;
 
   @Column()
   state: string;
@@ -29,62 +38,18 @@ export class Register {
   @Column()
   mandal: string;
 
-  // Other existing fields
-  @Column({ name: 'is_active', default: true })
-  isActive: boolean;
+  @Column()
+  subject: string;
 
-  @Column({ name: 'marital_status' })
-  maritalStatus: string;
+  @Column()
+  experience: string;
 
-  @Column({ 
-    name: 'marriage_date', 
-    type: 'timestamp with time zone', 
-    nullable: true 
-  })
-  marriageDate?: Date;
-
-  @Column({ type: 'text' })
+  @Column()
   address: string;
 
   @Column()
-  gender: string;
-
-  @Column({ default: 'Award Nomination' })
-  course: string;
+  qualification: string;
 
   @Column()
-  designation: string;
-
-  @Column({ name: 'highest_class_i_teach' })
-  highestClassITeach: string;
-
-  @Column({ name: 'school_correspondent_name' })
-  schoolCorrespondentName: string;
-
-  @Column({ name: 'school_correspondent_phone' })
-  schoolCorrespondentPhone: string;
-
-  @Column({ name: 'school_correspondent_email' })
-  schoolCorrespondentEmail: string;
-
-  @Column({ name: 'utr_number', nullable: true })
-  utrNumber: string;
-
-  @Column({ name: 'payment_screenshot', type: 'bytea', nullable: true })
-  paymentScreenshot: Buffer;
-
-  @Column({ name: 'screenshot_mime_type', nullable: true })
-  screenshotMimeType: string;
-
-  @Column({ name: 'password_hash' })
-  passwordHash: string;
-
-  @Column({ name: 'tenant_id' })
-  tenantId: string;
-
-  @Column({ default: 'user' })
-  role: string;
-
-  @Column({ name: 'created_at', type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-  createdAt: Date;
+  telegram_chat_id: string;
 }
