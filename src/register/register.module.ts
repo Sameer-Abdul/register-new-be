@@ -7,7 +7,7 @@ import { Tenant } from './entities/tenant.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Location, Tenant])
+    TypeOrmModule.forFeature([Location, Tenant]),
   ],
   controllers: [RegisterController],
   providers: [RegisterService],

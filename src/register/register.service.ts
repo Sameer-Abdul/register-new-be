@@ -19,6 +19,7 @@ export class RegisterService {
       .createQueryBuilder('loc')
       .select('DISTINCT loc.state', 'state')
       .getRawMany();
+
     return rows.map(r => r.state);
   }
 
@@ -28,6 +29,7 @@ export class RegisterService {
       .select('DISTINCT loc.district', 'district')
       .where('loc.state = :state', { state })
       .getRawMany();
+
     return rows.map(r => r.district);
   }
 
@@ -37,10 +39,11 @@ export class RegisterService {
       .select('loc.mandal', 'mandal')
       .where('loc.district = :district', { district })
       .getRawMany();
+
     return rows.map(r => r.mandal);
   }
 
   async getTenants() {
-    return await this.tenantRepo.find();
+    return this.tenantRepo.find();
   }
 }
