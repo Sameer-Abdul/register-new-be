@@ -73,4 +73,21 @@ export class RegisterController {
       );
     }
   }
+
+  @Get('tenants')
+  async getTenants() {
+    try {
+      const tenants = await this.registerService.getTenants();
+      return { success: true, data: tenants };
+    } catch (error) {
+      throw new HttpException(
+        {
+          status: HttpStatus.INTERNAL_SERVER_ERROR,
+          error: 'Error fetching tenants',
+          message: error.message,
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
 }
