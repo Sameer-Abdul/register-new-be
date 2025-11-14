@@ -1,8 +1,4 @@
-// src/register/entities/register.entity.ts
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, OneToOne, JoinColumn, OneToMany, ManyToOne } from 'typeorm';
-import { Payment } from '../../modules/payments/entities/payment.entity';
-import { Assignment } from '../../assignments/entities/assignment.entity';
-import { Location } from '../../locations/entities/location.entity';
+import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity('register')
 export class Register {
@@ -11,12 +7,6 @@ export class Register {
 
   @Column({ name: 'first_name' })
   firstName: string;
-
-  @Column({ name: 'is_active', default: true })
-  isActive: boolean;
-
-  @OneToMany(() => Assignment, assignment => assignment.register)
-  assignments: Assignment[];
 
   @Column({ name: 'middle_name', nullable: true })
   middleName: string;
@@ -29,6 +19,19 @@ export class Register {
 
   @Column({ unique: true })
   email: string;
+
+  @Column()
+  state: string;
+
+  @Column()
+  district: string;
+
+  @Column()
+  mandal: string;
+
+  // Other existing fields
+  @Column({ name: 'is_active', default: true })
+  isActive: boolean;
 
   @Column({ name: 'marital_status' })
   maritalStatus: string;
@@ -48,15 +51,6 @@ export class Register {
 
   @Column({ default: 'Award Nomination' })
   course: string;
-
-  @Column({ type: 'varchar', length: 100 })
-  state: string;
-
-  @Column({ type: 'varchar', length: 100 })
-  district: string;
-
-  @Column({ type: 'varchar', length: 100 })
-  mandal: string;
 
   @Column()
   designation: string;
@@ -82,33 +76,15 @@ export class Register {
   @Column({ name: 'screenshot_mime_type', nullable: true })
   screenshotMimeType: string;
 
-  @Column({ name: 'password_hash', nullable: false })
+  @Column({ name: 'password_hash' })
   passwordHash: string;
 
-  @Column({ name: 'tenant_id', nullable: false })
+  @Column({ name: 'tenant_id' })
   tenantId: string;
 
   @Column({ default: 'user' })
   role: string;
 
-  @CreateDateColumn({ name: 'created_at' })
+  @Column({ name: 'created_at', type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;
-
-  @Column({ name: 'payment_id', type: 'uuid', nullable: true })
-  paymentId: string | null;
-
-  @ManyToOne(() => Location, location => location.registers, { 
-    onDelete: 'SET NULL',
-    eager: true,
-    nullable: true 
-  })
-  @JoinColumn({ name: 'location_id' })
-  location: Location | null;
-
-  @OneToOne(() => Payment, payment => payment.register, {
-    onDelete: 'SET NULL',
-    nullable: true
-  })
-  @JoinColumn({ name: 'payment_id' })
-  payment: Payment | null;
 }

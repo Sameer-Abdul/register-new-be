@@ -7,7 +7,7 @@ import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      ignoreEnvFile: true,   // <-- SO RENDER USES ITS ENV VARIABLES
+      ignoreEnvFile: true,
     }),
 
     TypeOrmModule.forRootAsync({
@@ -15,20 +15,14 @@ import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
       inject: [ConfigService],
       useFactory: (config: ConfigService) => ({
         type: 'postgres',
-        host: config.get<string>('DB_HOST'),
-        port: config.get<number>('DB_PORT'),
-        username: config.get<string>('DB_USERNAME'),
-        password: config.get<string>('DB_PASSWORD'),
-        database: config.get<string>('DB_NAME'),
+        url: config.get<string>('DATABASE_URL'),
 
         autoLoadEntities: true,
-        synchronize: true, // Turn OFF later in production!
+        synchronize: true,
 
         namingStrategy: new SnakeNamingStrategy(),
 
-        ssl: process.env.NODE_ENV === 'production'
-          ? { rejectUnauthorized: false }
-          : false,
+        ssl: { rejectUnauthorized: false },
       }),
     }),
   ],
