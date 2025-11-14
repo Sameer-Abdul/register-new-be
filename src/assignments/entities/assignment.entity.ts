@@ -5,36 +5,41 @@ export class Assignment {
   @PrimaryGeneratedColumn()
   id: number;
 
-  // Foreign key - register table
-  @Column({ name: 'register_id' })
-  registerId: number;
+  @Column()
+  register_id: number;
 
-  // Register location fields coming from register table
-  @Column({ name: 'register_state', nullable: true })
-  registerState: string;
-
-  @Column({ name: 'register_district', nullable: true })
-  registerDistrict: string;
-
-  @Column({ name: 'register_mandal', nullable: true })
-  registerMandal: string;
-
-  // Assignment context / description
   @Column({ nullable: true })
-  context: string;
+  register_state: string;
 
-  // File data (base64 or text or url)
-  @Column({ name: 'file_data', type: 'text', nullable: true })
-  fileData: string;
+  @Column({ nullable: true })
+  register_district: string;
 
-  // Rating field
-  @Column({ type: 'int', nullable: true })
+  @Column({ nullable: true })
+  register_mandal: string;
+
+  // File information
+  @Column({ nullable: true })
+  file_name: string;
+
+  @Column({ nullable: true })
+  file_type: string;
+
+  @Column({ nullable: true })
+  file_size: number;
+
+  @Column({ type: 'bytea', nullable: true })
+  file_data: Buffer;
+
+  @Column({ type: 'timestamp', nullable: true })
+  created_at: Date;
+
+  @Column({ type: 'timestamp', nullable: true })
+  submission_date: Date;
+
+  // Rating & context
+  @Column({ nullable: true })
   rating: number;
 
-  // Register name fields (used in service)
-  @Column({ name: 'first_name', nullable: true })
-  firstName: string;
-
-  @Column({ name: 'last_name', nullable: true })
-  lastName: string;
+  @Column({ nullable: true })
+  context: string;
 }

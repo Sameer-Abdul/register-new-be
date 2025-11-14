@@ -7,12 +7,7 @@ export class AuthController {
 
   @Post('login')
   @HttpCode(HttpStatus.OK)
-  async login(@Body() loginDto: { email: string; password: string }) {
-    try {
-      const user = await this.authService.validateUser(loginDto.email, loginDto.password);
-      return this.authService.login(user);
-    } catch (error) {
-      throw error;
-    }
+  async login(@Body('email') email: string) {
+    return this.authService.validateUser(email);
   }
 }

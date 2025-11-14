@@ -13,9 +13,9 @@ import { Ollama } from 'ollama';
 export interface AssignmentResponse {
   id: number;
   register_id: number;
-  registerState: string | null;
-  registerDistrict: string | null;
-  registerMandal: string | null;
+  register_state: string | null;
+  register_district: string | null;
+  register_mandal: string | null;
   context: string | null;
   rating?: number;
 }
@@ -25,13 +25,21 @@ export interface MeritListItem {
   register_id: number;
   file_name: string;
   rating: number;
-  registerState?: string | null;
-  registerDistrict?: string | null;
-  registerMandal?: string | null;
+  register_state?: string | null;
+  register_district?: string | null;
+  register_mandal?: string | null;
   context?: string | null;
   first_name?: string | null;
   last_name?: string | null;
   user_email?: string | null;
+  // Backward compatibility
+  registerId?: number;
+  fileName?: string;
+  registerState?: string | null;
+  registerDistrict?: string | null;
+  registerMandal?: string | null;
+  firstName?: string | null;
+  lastName?: string | null;
 }
 
 export interface GroupedByState {
@@ -102,32 +110,33 @@ export class AssignmentsService {
     }
   }
 
-  async findOne(id: number): Promise<any> {
+  async findOne(id: number): Promise<AssignmentResponse | null> {
     const assignment = await this.assignmentRepository.findOne({
       where: { id },
       select: [
-        'id', 'registerId', 'fileName', 'fileType', 'fileSize',
-        'registerState', 'registerDistrict', 'registerMandal', 'rating', 'createdAt', 'fileData',
-        'submissionDate', 'firstName', 'lastName', 'context'
+        'id', 'register_id', 'file_name', 'file_type', 'file_size',
+        'register_state', 'register_district', 'register_mandal', 'rating', 'created_at', 'file_data',
+        'submission_date', 'context'
       ]
     });
 
     if (!assignment) {
       return null;
     }
-
-    const result = { 
-      ...assignment,
-      register_state: assignment.registerState,
-      register_district: assignment.registerDistrict,
-      register_mandal: assignment.registerMandal
-    } as any;
     
-    if (result.fileData) {
-      result.fileData = result.fileData.toString('base64');
-    }
+    // Create a response object with the correct type
+    const response: AssignmentResponse = {
+      id: assignment.id,
+      register_id: assignment.register_id,
+      register_state: assignment.register_state,
+      register_district: assignment.register_district,
+      register_mandal: assignment.register_mandal,
+      context: assignment.context,
+      rating: assignment.rating,
+      // Add other fields as needed
+    };
     
-    return result;
+    return response;
   }
 
   async updateRating(id: number, rating: number): Promise<Assignment | null> {
@@ -137,9 +146,9 @@ export class AssignmentsService {
 
     const assignment = await this.assignmentRepository.findOne({ 
       where: { id },
-      select: ['id', 'registerId', 'fileName', 'fileType', 'fileSize', 'rating',
-        'registerState', 'registerDistrict', 'registerMandal', 'createdAt',
-        'submissionDate', 'firstName', 'lastName', 'context']
+      select: ['id', 'register_id', 'file_name', 'file_type', 'file_size', 'rating',
+        'register_state', 'register_district', 'register_mandal', 'created_at',
+        'submission_date', 'first_name', 'last_name', 'context', 'file_data']
     });
     
     if (!assignment) {
@@ -149,18 +158,12 @@ export class AssignmentsService {
     assignment.rating = rating;
     const updatedAssignment = await this.assignmentRepository.save(assignment);
     
-    const result = { 
-      ...updatedAssignment,
-      register_state: updatedAssignment.registerState,
-      register_district: updatedAssignment.registerDistrict,
-      register_mandal: updatedAssignment.registerMandal
-    } as any;
-    
-    if (result.fileData) {
-      result.fileData = result.fileData.toString('base64');
+    // Convert file_data to base64 if it exists
+    if (updatedAssignment.file_data) {
+      updatedAssignment.file_data = updatedAssignment.file_data.toString('base64');
     }
     
-    return result;
+    return updatedAssignment;
   }
 
   async getMeritList(): Promise<MeritList> {
@@ -187,12 +190,12 @@ export class AssignmentsService {
         .createQueryBuilder('a')
         .select([
           'a.id as a_id',
-          'a.registerId as a_registerId',
-          'a.fileName as a_fileName',
+          'a.register_id as a_register_id',
+          'a.file_name as a_file_name',
           'a.rating as a_rating',
-          'a.registerState as a_registerState',
-          'a.registerDistrict as a_registerDistrict',
-          'a.registerMandal as a_registerMandal',
+          'a.register_state as a_register_state',
+          'a.register_district as a_register_district',
+          'a.register_mandal as a_register_mandal',
           'a.context as a_context',
           'r.first_name as register_first_name',
           'r.last_name as register_last_name',
@@ -207,24 +210,26 @@ export class AssignmentsService {
         .getRawMany())
         .map(rawPerformer => {
           // Create a clean performer object with proper field mapping
-          const performer = {
+          const performer: MeritListItem = {
             id: rawPerformer.a_id,
-            registerId: rawPerformer.a_registerId,
-            fileName: rawPerformer.a_fileName,
-            rating: parseFloat(rawPerformer.a_rating),
-            registerState: rawPerformer.a_registerState || rawPerformer.r_state || null,
-            registerDistrict: rawPerformer.a_registerDistrict || rawPerformer.r_district || null,
-            registerMandal: rawPerformer.a_registerMandal || rawPerformer.r_mandal || null,
-            context: rawPerformer.a_context,
-            firstName: rawPerformer.register_first_name || '',
-            lastName: rawPerformer.register_last_name || '',
-            register: {
-              email: rawPerformer.r_email
-            },
+            register_id: rawPerformer.a_register_id,
+            file_name: rawPerformer.a_file_name,
+            rating: parseFloat(rawPerformer.a_rating || '0'),
+            register_state: rawPerformer.a_register_state || rawPerformer.r_state || null,
+            register_district: rawPerformer.a_register_district || rawPerformer.r_district || null,
+            register_mandal: rawPerformer.a_register_mandal || rawPerformer.r_mandal || null,
+            context: rawPerformer.a_context || null,
+            first_name: rawPerformer.register_first_name || null,
+            last_name: rawPerformer.register_last_name || null,
+            user_email: rawPerformer.r_email || null,
             // Backward compatibility
-            state: rawPerformer.a_registerState || rawPerformer.r_state || null,
-            district: rawPerformer.a_registerDistrict || rawPerformer.r_district || null,
-            mandal: rawPerformer.a_registerMandal || rawPerformer.r_mandal || null
+            registerId: rawPerformer.a_register_id,
+            fileName: rawPerformer.a_file_name,
+            registerState: rawPerformer.a_register_state || rawPerformer.r_state || null,
+            registerDistrict: rawPerformer.a_register_district || rawPerformer.r_district || null,
+            registerMandal: rawPerformer.a_register_mandal || rawPerformer.r_mandal || null,
+            firstName: rawPerformer.register_first_name || null,
+            lastName: rawPerformer.register_last_name || null
           };
           
           this.logger.debug('Mapped performer data:', performer);
@@ -375,10 +380,10 @@ export class AssignmentsService {
     data: any,
     file: any
   ): Promise<{ message: string; assignment: AssignmentResponse }> {
-    this.logger.log('Starting createAssignment with data:', { registerId: data.register_id || data.registerId, fileName: file?.originalname });
+    this.logger.log('Starting createAssignment with data:', { register_id: data.register_id || data.registerId, file_name: file?.originalname });
     
-    const registerId = Number(data.register_id || data.registerId);
-    if (!registerId) {
+    const register_id = Number(data.register_id || data.registerId);
+    if (!register_id) {
       throw new NotFoundException('register_id is required');
     }
 
@@ -388,17 +393,17 @@ export class AssignmentsService {
     await queryRunner.startTransaction();
 
     try {
-      this.logger.log(`Fetching register with ID: ${registerId}`);
+      this.logger.log(`Fetching register with ID: ${register_id}`);
       
       // 1. First, get the register data with a lock to prevent concurrent modifications
       const register = await queryRunner.manager
         .createQueryBuilder(Register, 'register')
         .setLock('pessimistic_write')
-        .where('register.id = :id', { id: registerId })
+        .where('register.id = :id', { id: register_id })
         .getOne();
 
       if (!register) {
-        throw new NotFoundException(`Register record not found for ID ${registerId}`);
+        throw new NotFoundException(`Register record not found for ID ${register_id}`);
       }
 
       this.logger.log('Register data:', {
@@ -406,8 +411,8 @@ export class AssignmentsService {
         state: register.state,
         district: register.district,
         mandal: register.mandal,
-        firstName: register.firstName,
-        lastName: register.lastName
+        first_name: register.first_name,
+        last_name: register.last_name
       });
 
       // 2. Verify required location data exists in register
