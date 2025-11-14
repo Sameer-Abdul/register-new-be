@@ -7,7 +7,7 @@ import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: '.env',
+      ignoreEnvFile: true,   // <-- SO RENDER USES ITS ENV VARIABLES
     }),
 
     TypeOrmModule.forRootAsync({
