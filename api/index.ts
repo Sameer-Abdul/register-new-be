@@ -1,13 +1,16 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from '../src/app.module';
+import { Callback, Context, Handler } from 'aws-lambda';
 import serverlessExpress from '@vendia/serverless-express';
+import 'reflect-metadata';
 
-let cachedServer;
+let cachedServer: Handler;
 
 async function bootstrapServer() {
   if (!cachedServer) {
     const app = await NestFactory.create(AppModule, { bodyParser: true });
 
+    // Enable CORS
     app.enableCors({
       origin: "*",
       methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
@@ -22,7 +25,12 @@ async function bootstrapServer() {
   return cachedServer;
 }
 
-export const handler = async (event, context) => {
+// ✅ Vercel requires a default export that works as a handler
+export default async function handler(
+  event: any,
+  context: Context,
+  callback: Callback,
+) {
   const server = await bootstrapServer();
-  return server(event, context);
-};
+  return server(event, context, callback);
+}
