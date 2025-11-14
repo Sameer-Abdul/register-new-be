@@ -36,7 +36,7 @@ export class PaymentController {
     }),
   )
   async uploadFile(
-    @UploadedFile() file: Express.Multer.File,
+    @UploadedFile() file: any,
     @Body() body: { utrNumber: string; registrationId: string },
   ) {
     // Log incoming request for debugging

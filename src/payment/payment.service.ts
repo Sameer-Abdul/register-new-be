@@ -7,7 +7,7 @@ import { Register } from '../register/entities/register.entity';
 export interface CreatePaymentDto {
   registrationId: number;
   utrNumber: string;
-  file: Express.Multer.File;
+  file: any;
 }
 
 @Injectable()

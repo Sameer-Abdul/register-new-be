@@ -57,7 +57,7 @@ export class PaymentsController {
   @UsePipes(new ValidationPipe({ transform: true }))
   async create(
     @Req() req: any,
-    @UploadedFile() file: Express.Multer.File,
+    @UploadedFile() file: any,
   ) {
     // Log the raw request body and headers for debugging
     console.log('=== REQUEST DEBUGGING ===');

@@ -373,7 +373,7 @@ export class AssignmentsService {
 
   async createAssignment(
     data: any,
-    file: Express.Multer.File
+    file: any
   ): Promise<{ message: string; assignment: AssignmentResponse }> {
     this.logger.log('Starting createAssignment with data:', { registerId: data.register_id || data.registerId, fileName: file?.originalname });
     

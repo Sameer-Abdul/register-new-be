@@ -16,7 +16,7 @@ export class AssignmentsController {
   @Post()
   @UseInterceptors(FileInterceptor('file'))
   async uploadAssignment(
-    @UploadedFile() file: Express.Multer.File,
+    @UploadedFile() file: any,
     @Body() body: { register_id: string; context?: string },
   ): Promise<{ message: string; assignment: AssignmentResponse }> {
     return this.assignmentsService.createAssignment(body, file);
