@@ -1,29 +1,18 @@
 {
   "compilerOptions": {
-    "baseUrl": ".",
-    "paths": {
-      "@auth/*": ["src/auth/*"],
-      "@decorators/*": ["src/auth/decorators/*"],
-      "@guards/*": ["src/auth/guards/*"],
-      "@enums/*": ["src/auth/enums/*"]
-    },
     "module": "commonjs",
     "target": "es2017",
-    "declaration": false,
-    "sourceMap": true,
-    "outDir": "dist",
-    "rootDir": "./",
-    "esModuleInterop": true,
-    "strict": false,
-    "skipLibCheck": true,
+    "declaration": true,
+    "removeComments": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
+    "sourceMap": true,
+    "outDir": "./dist",
     "incremental": true,
-    "strictNullChecks": true,
-    "forceConsistentCasingInFileNames": true,
-    "noImplicitAny": false,
-    "strictBindCallApply": false,
-    "noFallthroughCasesInSwitch": false
+    "strict": false,
+    "skipLibCheck": true
   },
-  "include": ["src/**/*", "api/**/*"]
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist"]
 }
