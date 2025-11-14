@@ -1,33 +1,16 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
-import { Register } from '../../register/entities/register.entity';
+import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
 @Entity('locations')
 export class Location {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'varchar', length: 100 })
+  @Column()
   state: string;
 
-  @Column({ type: 'varchar', length: 100 })
+  @Column()
   district: string;
 
-  @Column({ type: 'varchar', length: 100 })
+  @Column()
   mandal: string;
-
-  @OneToMany(() => Register, (register) => register.location, {
-    cascade: true,
-    onDelete: 'SET NULL'
-  })
-  registers: Register[];
-
-  @CreateDateColumn({ name: 'created_at' })
-  createdAt: Date;
-
-  @UpdateDateColumn({ name: 'updated_at' })
-  updatedAt: Date;
-
-  constructor(partial?: Partial<Location>) {
-    Object.assign(this, partial);
-  }
 }

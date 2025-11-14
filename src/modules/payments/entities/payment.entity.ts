@@ -1,13 +1,10 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { Register } from '../../../register/entities/register.entity';
 
-@Entity()
+@Entity('payments')
 export class Payment {
   @PrimaryGeneratedColumn()
   id: number;
-
-  @ManyToOne(() => Register, { onDelete: 'CASCADE' })
-  register: Register;
 
   @Column()
   utr_number: string;
@@ -15,6 +12,7 @@ export class Payment {
   @Column()
   screenshot_url: string;
 
-  @Column()
-  paid_at: Date;
+  @ManyToOne(() => Register)
+  @JoinColumn({ name: 'register_id' })
+  register: Register;
 }
