@@ -4,21 +4,14 @@ import { AppModule } from './app.module';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // Allow all origins for Vercel deployment
   app.enableCors({
-    origin: '*',
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    origin: "*",
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
     credentials: true,
   });
 
-  // Initialize the application but don't call listen()
-  await app.init();
-  console.log('✅ Application initialized');
-  
-  return app;
+  await app.listen(process.env.PORT || 3000);
+  console.log(`🚀 Server running on port ${process.env.PORT || 3000}`);
 }
 
-// Export the bootstrap function for Vercel serverless
-const appPromise = bootstrap();
-
-export { appPromise };
+bootstrap();
